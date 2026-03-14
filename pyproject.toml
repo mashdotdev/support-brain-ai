@@ -15,6 +15,7 @@ dependencies = [
     "openai-agents>=0.12.2",
     "pwdlib[argon2]>=0.3.0",
     "pydantic-settings>=2.13.1",
+    "python-jose[cryptography]>=3.5.0",
     "slowapi>=0.1.9",
     "sqlmodel>=0.0.37",
 ]

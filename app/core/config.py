@@ -21,10 +21,12 @@ class Settings(BaseSettings):
     )
 
     # Authentication Configurations
-    secret_key: str | None = Field(
-        default=None,
+    secret_key: str = Field(
+        default="",
         description="Secret key for the authentication for JWT authentication",
     )
+    jwt_algorithm: str = "HS256"
+    access_token_expire_time: int = 30
 
     # Database Configuration
     database_url: str = Field(

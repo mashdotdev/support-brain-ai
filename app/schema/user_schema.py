@@ -11,3 +11,10 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id: str
     email: str
+
+
+class CurrentUserResponse(BaseModel):
+    id: str
+    name: str | None
+    email: str
+    created_at: str
