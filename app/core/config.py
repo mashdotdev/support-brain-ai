@@ -7,9 +7,10 @@ class Settings(BaseSettings):
     """Environmental and configuration"""
 
     # Gemini configurations
-    gemini_api_key: str | None = Field(
-        default=None, description="Gemini api key for the AI modal"
+    gemini_api_key: str = Field(
+        default="", description="Gemini api key for the AI modal"
     )
+    gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
     embedding_model: str | None = Field(
         default=None, description="Embedding model for the vectors"
     )
