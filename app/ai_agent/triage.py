@@ -14,8 +14,6 @@ gemini_model = OpenAIChatCompletionsModel(
     model="gemini-2.5-flash", openai_client=gemini_client
 )
 
-print(settings.gemini_api_key)
-
 
 async def agent(message: str):
     triage_agent = Agent(

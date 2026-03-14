@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, SecretStr
 from functools import lru_cache
 
 
@@ -7,19 +7,18 @@ class Settings(BaseSettings):
     """Environmental and configuration"""
 
     # Gemini configurations
-    gemini_api_key: str = Field(
-        default="", description="Gemini api key for the AI modal"
+    gemini_api_key: SecretStr = Field(
+        default=SecretStr(""), description="Gemini api key for the AI modal"
     )
     gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
-    embedding_model: str | None = Field(
-        default=None, description="Embedding model for the vectors"
+    embedding_model: str = Field(
+        default="", description="Embedding model for the vectors"
     )
     embedding_dimension: int = 768
 
     # Qdrant Configuration
-    qdrant_url: str | None = Field(
-        default=None, description="Qdrant database url (docker)"
-    )
+    qdrant_url: str = Field(default="", description="Qdrant database url (docker)")
+    qdrant_collection_name: str = "docs_collection"
 
     # Authentication Configurations
     secret_key: str = Field(
