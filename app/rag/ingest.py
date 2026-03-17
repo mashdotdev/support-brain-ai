@@ -1,4 +1,6 @@
 import hashlib
+import time
+
 from app.core.config import get_settings, Settings
 
 from qdrant_client import QdrantClient
@@ -14,6 +16,7 @@ from qdrant_client.http.models import (
 )
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
+from langchain_community.embeddings import JinaEmbeddings
 
 settings: Settings = get_settings()
 
@@ -51,8 +54,9 @@ def get_vector_store(client: QdrantClient) -> QdrantVectorStore:
     vector_store = QdrantVectorStore(
         client=client,
         collection_name=settings.qdrant_collection_name,
-        embedding=GoogleGenerativeAIEmbeddings(
-            api_key=settings.gemini_api_key, model=settings.embedding_model
+        embedding=JinaEmbeddings(
+            jina_api_key=settings.jina_api_key.get_secret_value(),  # type: ignore[arg-type]
+            model_name="jina-embeddings-v3",
         ),
         vector_name="dense",
         sparse_vector_name="sparse",
@@ -70,7 +74,10 @@ def create_chunk_id(url: str, chunk_index: int) -> str:
 
 
 def load_from_sitemap(sitemap_url: str) -> list[Document]:
-    loader = SitemapLoader(web_path=sitemap_url)
+    loader = SitemapLoader(
+        web_path=sitemap_url,
+        filter_urls=[r"https://docs\.pydantic\.dev/latest/concepts/"],
+    )
     loader.requests_per_second = 2
     return loader.load()
 
@@ -80,7 +87,7 @@ def load_from_urls(urls: list[str]) -> list[Document]:
     return loader.load()
 
 
-def inngest(sitemap_url: str | None, urls: list[str] | None):
+def ingest(sitemap_url: str | None, urls: list[str] | None):
     if sitemap_url:
         docs = load_from_sitemap(sitemap_url)
     elif urls:
@@ -96,7 +103,6 @@ def inngest(sitemap_url: str | None, urls: list[str] | None):
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=600,
         chunk_overlap=200,
-        len_func=len,
         separators=["\n\n", "\n", " ", ""],
     )
     chunks = splitter.split_documents(docs)
@@ -110,6 +116,12 @@ def inngest(sitemap_url: str | None, urls: list[str] | None):
     client = QdrantClient(url=settings.qdrant_url)
     create_collection(client)
     store = get_vector_store(client)
-    store.add_documents(chunks)
+
+    batch_size = 50
+    for i in range(0, len(chunks), batch_size):
+        batch = chunks[i : i + batch_size]
+        store.add_documents(batch)
+        if i + batch_size < len(chunks):
+            time.sleep(60)
 
     return len(chunks)

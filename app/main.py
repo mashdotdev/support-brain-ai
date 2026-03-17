@@ -2,6 +2,7 @@ from typing import cast
 
 from app.routes.user import user_router
 from app.routes.agent_route import ai_agent_router
+from app.routes.rag_route import rag_router
 from app.database.db import lifespan
 
 from fastapi import FastAPI, Request
@@ -26,6 +27,7 @@ app.add_exception_handler(
 
 app.include_router(router=user_router)
 app.include_router(router=ai_agent_router)
+app.include_router(router=rag_router)
 
 
 @app.get(path="/health", description="Check API health and running status")

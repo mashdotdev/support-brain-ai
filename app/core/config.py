@@ -12,12 +12,14 @@ class Settings(BaseSettings):
     )
     gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
     embedding_model: str = Field(
-        default="", description="Embedding model for the vectors"
+        default="gemini-embedding-001", description="Embedding model for the vectors"
     )
-    embedding_dimension: int = 768
+    embedding_dimension: int = 1024
 
     # Qdrant Configuration
-    qdrant_url: str = Field(default="", description="Qdrant database url (docker)")
+    qdrant_url: str = Field(
+        default="http://localhost:6333", description="Qdrant database url (docker)"
+    )
     qdrant_collection_name: str = "docs_collection"
 
     # Authentication Configurations
@@ -32,6 +34,9 @@ class Settings(BaseSettings):
     database_url: str = Field(
         default="", description="PostgreSQL database url Neon or Supabase"
     )
+
+    # jina config
+    jina_api_key: SecretStr = Field(default=SecretStr(""))
 
     class Config:
         env_file = ".env"
