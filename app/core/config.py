@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     # jina config
     jina_api_key: SecretStr = Field(default=SecretStr(""))
 
+    # open router
+    open_router_api_key: str = ""
+
     class Config:
         env_file = ".env"
 

@@ -8,7 +8,7 @@ set_tracing_disabled(True)
 settings: Settings = get_settings()
 
 open_router_client = AsyncOpenAI(
-    api_key="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",
+    api_key=settings.open_router_api_key,
     base_url="https://openrouter.ai/api/v1",
 )
 
